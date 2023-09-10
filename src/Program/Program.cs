@@ -3,39 +3,33 @@
 // Copyright (c) Programación II. Derechos reservados.
 // </copyright>
 //-------------------------------------------------------------------------
-
 using System;
-using System.Collections;
-using System.Linq;
+using System.Collections.Generic;
 using Full_GRASP_And_SOLID.Library;
 
 namespace Full_GRASP_And_SOLID
 {
     public class Program
     {
-        private static ArrayList productCatalog = new ArrayList();
-
-        private static ArrayList equipmentCatalog = new ArrayList();
+        private static List<Product> productCatalog = new List<Product>();
+        private static List<Equipment> equipmentCatalog = new List<Equipment>();
 
         public static void Main(string[] args)
         {
             PopulateCatalogs();
 
-            Recipe recipe = new Recipe();
-            recipe.FinalProduct = GetProduct("Café con leche");
-            recipe.AddStep(new Step(GetProduct("Café"), 100, GetEquipment("Cafetera"), 120));
-            recipe.AddStep(new Step(GetProduct("Leche"), 200, GetEquipment("Hervidor"), 60));
-            recipe.PrintRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.PrintRecipeWithCost(); 
         }
 
         private static void PopulateCatalogs()
         {
-            AddProductToCatalog("Café", 100);
-            AddProductToCatalog("Leche", 200);
-            AddProductToCatalog("Café con leche", 300);
+            AddProductToCatalog("Café", 0.1);
+            AddProductToCatalog("Leche", 0.2);
+            AddProductToCatalog("Café con leche", 0.3);
 
-            AddEquipmentToCatalog("Cafetera", 1000);
-            AddEquipmentToCatalog("Hervidor", 2000);
+            AddEquipmentToCatalog("Cafetera", 10);
+            AddEquipmentToCatalog("Hervidor", 20);
         }
 
         private static void AddProductToCatalog(string description, double unitCost)
@@ -43,31 +37,28 @@ namespace Full_GRASP_And_SOLID
             productCatalog.Add(new Product(description, unitCost));
         }
 
-        private static void AddEquipmentToCatalog(string description, double hourlyCost)
+        private static void AddEquipmentToCatalog(string description, double minuteCost)
         {
-            equipmentCatalog.Add(new Equipment(description, hourlyCost));
-        }
-
-        private static Product ProductAt(int index)
-        {
-            return productCatalog[index] as Product;
-        }
-
-        private static Equipment EquipmentAt(int index)
-        {
-            return equipmentCatalog[index] as Equipment;
+            equipmentCatalog.Add(new Equipment(description, minuteCost));
         }
 
         private static Product GetProduct(string description)
         {
-            var query = from Product product in productCatalog where product.Description == description select product;
-            return query.FirstOrDefault();
+            return productCatalog.Find(product => product.Description == description);
         }
 
         private static Equipment GetEquipment(string description)
         {
-            var query = from Equipment equipment in equipmentCatalog where equipment.Description == description select equipment;
-            return query.FirstOrDefault();
+            return equipmentCatalog.Find(equipment => equipment.Description == description);
+        }
+
+        private static Recipe CreateRecipe()
+        {
+            Recipe recipe = new Recipe();
+            recipe.FinalProduct = GetProduct("Café con leche");
+            recipe.AddStep(new Step(GetProduct("Café"), 0.1, GetEquipment("Cafetera"), 12));
+            recipe.AddStep(new Step(GetProduct("Leche"), 0.2, GetEquipment("Hervidor"), 6));
+            return recipe;
         }
     }
 }
